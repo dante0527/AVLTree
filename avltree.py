@@ -1,6 +1,8 @@
-# Author: Dante Lee
+"""
+Self-Balancing Binary Search Tree
+Author: Dante Lee
+"""
 
-# Self-Balancing Binary Search Tree
 class AVLTree:
 
     # Node structure
@@ -15,36 +17,35 @@ class AVLTree:
 
         def __repr__(self):
             return repr(self.key)
-        
+
         def __eq__(self, other):
             # Integer comparison
             if isinstance(other, int):
                 return self.key == other
             # Memory instance comparison
-            elif isinstance(other, AVLTree.BinaryNode):
+            if isinstance(other, AVLTree.BinaryNode):
                 return self is other
-            else:
-                return False
+            return False
 
         def __lt__(self, other):
             # Integer comparison
             if isinstance(other, int):
                 return self.key < other
             # Other node comparison
-            elif isinstance(other, AVLTree.BinaryNode):
+            if isinstance(other, AVLTree.BinaryNode):
                 return self.key < other.key
-            else:
-                raise TypeError(f"unsupported operand type(s) for <: {type(self)} and {type(other)}")
-        
+
+            raise TypeError(f"unsupported operand type(s) for <: {type(self)} and {type(other)}")
+
         def __gt__(self, other):
             # Integer comparison
             if isinstance(other, int):
                 return self.key > other
             # Other node comparison
-            elif isinstance(other, AVLTree.BinaryNode):
+            if isinstance(other, AVLTree.BinaryNode):
                 return self.key > other.key
-            else:
-                raise TypeError(f"unsupported operand type(s) for >: {type(self)} and {type(other)}")
+
+            raise TypeError(f"unsupported operand type(s) for >: {type(self)} and {type(other)}")
 
 
     # AVLTree Constructor
@@ -54,7 +55,7 @@ class AVLTree:
 
     # Inserts the key x into your AVL tree
     def insert(self, key):
-        
+
         def _insert(node, key):
 
             # Starting at root
@@ -66,24 +67,24 @@ class AVLTree:
                 node.left = _insert(node.left, key)
             else:
                 node.right = _insert(node.right, key)
-            
+
             node.depth = 1 + max(self.node_height(node.left), self.node_height(node.right))
             balance = self._balance(node)
-        
+
             if balance > 1 and key < node.left.key:
                 return self._rotate_right(node)
-        
+
             if balance < -1 and key > node.right.key:
                 return self._rotate_left(node)
-        
+
             if balance > 1 and key > node.left.key:
                 node.left = self._rotate_left(node.left)
                 return self._rotate_right(node)
-        
+
             if balance < -1 and key < node.right.key:
                 node.right = self._rotate_right(node.right)
                 return self._rotate_left(node)
-        
+
             return node
 
         self.root = _insert(self.root, key)
@@ -93,19 +94,19 @@ class AVLTree:
     def remove(self, key):
 
         def _remove(node, key):
-    
+
             # If this node is null then return node
-            if node == None:
+            if node is None:
                 return AVLTree.BinaryNode(key)
 
             # Traverse down tree recursively
             # Turn left
             if key < node.key:
-                node.left = self._remove(node.left, key)
+                node.left = _remove(node.left, key)
 
             # Turn right
             elif key > node.key:
-                node.right = self._remove(node.right, key)
+                node.right = _remove(node.right, key)
 
             # Found key
             else:
@@ -135,13 +136,13 @@ class AVLTree:
                         temp = temp.left
 
                     node.key = temp.key
-                    node.right = self._remove(node.right, temp.key)
+                    node.right = _remove(node.right, temp.key)
 
                 return node
 
         self.root = _remove(self.root, key)
 
-    
+
     # Reurns the key that matches x
     def find(self, key):
 
@@ -154,7 +155,7 @@ class AVLTree:
             if node.key == key:
                 return node
             # Go left
-            elif key < node.key:
+            if key < node.key:
                 node = node.left
             # Go right
             else:
@@ -166,12 +167,11 @@ class AVLTree:
 
     # Returns the current height of the AVL tree
     def tree_height(self):
-        
+
         def _tree_height(node):
             if node is None:
                 return -1
-            else:
-                return max(self.node_height(node.left), self.node_height(node.right)) + 1
+            return max(self.node_height(node.left), self.node_height(node.right)) + 1
 
         return _tree_height(self.root)
 
@@ -180,13 +180,12 @@ class AVLTree:
     def node_height(self, node):
         if node is None:
             return -1
-        else:
-            return max(self.node_height(node.left), self.node_height(node.right)) + 1
+        return max(self.node_height(node.left), self.node_height(node.right)) + 1
 
 
     # Returns the depth of the node that contains the x key
     def depth(self, key):
-        node = find(key)
+        node = self.find(key)
         if node is not None:
             return node.depth
         return None
@@ -213,16 +212,15 @@ class AVLTree:
     def _balance(self, node):
         if node.key is None:
             return 0
-        else:
-            return self.depth(node.left) - self.depth(node.right)
+        return self.depth(node.left) - self.depth(node.right)
 
-    
+
     def _rotate_left(self, node):
         new_root = node.right
         node.right = new_root.left
         new_root.left = node
-        node.depth = 1 + max(self._height(node.left), self._height(node.right))
-        new_root.depth = 1 + max(self._height(new_root.left), self._height(new_root.right))
+        node.depth = 1 + max(self.node_height(node.left), self.node_height(node.right))
+        new_root.depth = 1 + max(self.node_height(new_root.left), self.node_height(new_root.right))
         return new_root
 
 
@@ -230,12 +228,12 @@ class AVLTree:
         new_root = node.left
         node.left = new_root.right
         new_root.right = node
-        node.depth = 1 + max(self._depth(node.left), self._depth(node.right))
-        new_root.depth = 1 + max(self._depth(new_root.left), self._depth(new_root.right))
+        node.depth = 1 + max(self.depth(node.left), self.depth(node.right))
+        new_root.depth = 1 + max(self.depth(new_root.left), self.depth(new_root.right))
         return new_root
 
 
-menu = """\
+MENU = """\
 Choose an option:\n\
 1: Add a key\n\
 2: Remove a key\n\
@@ -247,7 +245,7 @@ Choose an option:\n\
 > """
 
 def main():
-    
+
     # Create empty tree
     tree = AVLTree()
 
@@ -258,11 +256,11 @@ def main():
     while choice != 9:
 
         # Get choice from user
-        choice = input(menu)
-        
+        choice = input(MENU)
+
         # Match user choice to action
         match choice:
-            
+
             # Add a key
             case '1':
                 try:
@@ -270,10 +268,10 @@ def main():
                     tree.insert(key)
                     print(f"Key {key} added to tree\n")
                     continue
-                except:
-                    print(f"Invalid key\n") 
+                except TypeError:
+                    print("Invalid key\n")
                     continue
-            
+
             # Remove a key
             case '2':
                 try:
@@ -281,7 +279,7 @@ def main():
                     tree.remove(key)
                     print(f"Key {key} removed from tree\n")
                     continue
-                except:
+                except TypeError:
                     print("Invalid key\n")
                     continue
 
@@ -292,15 +290,15 @@ def main():
                     key = tree.find(key)
                     print(f"{key} found\n")
                     continue
-                except:
+                except TypeError:
                     print("Invalid key\n")
                     continue
-            
+
             # Print height of tree
             case '4':
                 print(f"Tree height: {tree.tree_height()}\n")
                 continue
-            
+
             # Get depth of node
             case '5':
                 try:
@@ -312,7 +310,7 @@ def main():
                     else:
                         print(f"Key {key} not found\n")
                     continue
-                except:
+                except TypeError:
                     print("Invalid key\n")
                     continue
 
@@ -320,7 +318,7 @@ def main():
             case '6':
                 print(f"Linear representation:\n{tree.linear_representation()}\n")
                 continue
-            
+
             # Exit
             case '9':
                 print("Goodbye")
@@ -339,4 +337,4 @@ def test_bench():
 
 
 if __name__ == "__main__":
-    main()
+    test_bench()
