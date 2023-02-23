@@ -186,19 +186,11 @@ class AVLTree:
 
     # Returns the depth of the node that contains the x key
     def depth(self, key):
+        node = find(key)
+        if node is not None:
+            return node.depth
+        return None
 
-        def _depth(node, key, depth):
-            if node is None:
-                return None
-            elif key < node.key:
-                return _depth(node.left, key, depth + 1)
-            elif key > node.key:
-                return _depth(node.right, key, depth + 1)
-            else:
-                return depth
-
-        return _depth(self.root, key, 1)
-    
 
     # Returns the linear representation of the tree
     def linear_representation(self):
