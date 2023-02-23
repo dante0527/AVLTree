@@ -1,4 +1,3 @@
-# COS 120 Hw02
 # Author: Dante Lee
 
 # Self-Balancing Binary Search Tree
